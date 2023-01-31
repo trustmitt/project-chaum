@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
-import MainComponent from "./MainComponent";
-import FeedComponent from "./FeedComponent";
+import Today from "./Today";
+import Feed from "./Feed";
 
 const TabMenuItem = styled.ul`
     background-color: #9ac3f4;
@@ -40,25 +40,29 @@ const Desc = styled.div`
 const TabMenu = () => {
     const [currentTab, clickTab] = useState(0);
     const menuArr = [
-        { name: "TODAY", content: <MainComponent /> },
-        { name: "FEED", content: <FeedComponent /> },
+        { name: "TODAY", content: <Today /> },
+        { name: "FEED", content: <Feed /> },
     ];
 
     const selectMenuHandler = (index: any) => {
         clickTab(index);
+        localStorage.setItem("tab", index);
     };
+
+    const tabIndex = localStorage.getItem("tab");
+
     return (
         <>
             <div>
                 <TabMenuItem>
                     {menuArr.map((el, index) => (
-                        <li key={index} className={index === currentTab ? "submenu focused" : "submenu"} onClick={() => selectMenuHandler(index)}>
+                        <li key={index} className={index === +tabIndex ? "submenu focused" : "submenu"} onClick={() => selectMenuHandler(index)}>
                             {el.name}
                         </li>
                     ))}
                 </TabMenuItem>
                 <Desc>
-                    <div>{menuArr[currentTab].content}</div>
+                    <div>{menuArr[+tabIndex].content}</div>
                 </Desc>
             </div>
         </>

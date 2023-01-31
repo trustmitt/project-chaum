@@ -1,18 +1,18 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAbWLQTFqUlgV_hE9NYAvnvKqYn5_gM4i8",
-    authDomain: "chaeum-a444b.firebaseapp.com",
-    databaseURL: "https://chaeum-a444b-default-rtdb.firebaseio.com",
-    projectId: "chaeum-a444b",
-    storageBucket: "chaeum-a444b.appspot.com",
-    messagingSenderId: "142246824736",
-    appId: "1:142246824736:web:d5fa62bf458a8f27132545",
-    measurementId: "G-D2R1SZYERQ",
+    apiKey: "AIzaSyCT88ZZHjDbCz29SN4o6R13y0bHZ9LVIcc",
+    authDomain: "chaeum-temporary.firebaseapp.com",
+    projectId: "chaeum-temporary",
+    storageBucket: "chaeum-temporary.appspot.com",
+    messagingSenderId: "200276100577",
+    appId: "1:200276100577:web:f756680ebb726b36fffea0",
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const storage = getStorage(app);

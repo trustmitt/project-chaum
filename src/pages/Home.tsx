@@ -1,28 +1,31 @@
-import HeaderBar from "../components/HeaderBar";
-import TabMenu from "../components/TabMenu";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useState, useEffect } from "react";
+
+import { db } from "../firebase-config";
+import { getDocs, query, collection, where } from "firebase/firestore";
+
+import Initial from "../components/Initial";
+import Main from "../components/Main";
 
 function Home() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user: any) => {
-        if (user) {
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/firebase.User
-            const uid = user.uid;
-            console.log(uid);
-            console.log(user);
-            // ...
-        } else {
-            // User is signed out
-            // ...
-        }
-    });
-    return (
-        <>
-            <HeaderBar />
-            <TabMenu />
-        </>
-    );
+    const [users, setUsers] = useState([]);
+
+    const uid = localStorage.getItem("uid");
+    const q = query(collection(db, "user"), where("id", "==", uid));
+
+    useEffect(() => {
+        const querySnapshot = async () => {
+            const data = await getDocs(q);
+            setUsers(
+                data.docs.map((doc) => ({
+                    ...doc.data(),
+                    docId: doc.id,
+                }))
+            );
+        };
+        querySnapshot();
+    }, [q]);
+
+    return <>{users.length ? <Main /> : <Initial />}</>;
 }
 
 export default Home;

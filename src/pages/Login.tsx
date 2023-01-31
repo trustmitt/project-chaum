@@ -1,29 +1,50 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase-config";
-
-import { Link } from "react-router-dom";
 import KakaoLogin from "react-kakao-login";
 
-import "../assets/css/style.css";
+import { onAuthStateChanged, signInWithEmailAndPassword, getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { app } from "../firebase-config";
+
+import { Link } from "react-router-dom";
+
+import logoImg from "../assets/img/main-img.png";
+import "../styles/style.css";
 import styled from "styled-components";
 
-const LoginContainer = () => {
+const Login = () => {
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
     const [user, setUser] = useState({});
+    const [getUid, setGetUid] = useState("");
 
     useEffect(() => {
+        const auth = getAuth(app);
         onAuthStateChanged(auth, (currentUser: any) => {
             setUser(currentUser);
+            setGetUid(currentUser.uid);
         });
     }, []);
-    console.log(user);
+
+    const handleGoogleLogin = () => {
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((data) => {
+                setUser(data.user);
+                console.log(data);
+                localStorage.setItem("uid", getUid);
+                document.location.href = "/";
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
 
     const login = async () => {
         try {
+            const auth = getAuth(app);
             await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-            document.location.href = "/home";
+            localStorage.setItem("uid", getUid);
+            document.location.href = "/";
         } catch (error) {
             console.log("error");
         }
@@ -33,29 +54,9 @@ const LoginContainer = () => {
         event.preventDefault();
     };
 
-    const buttonBlock = {
-        border: "none",
-        borderRadius: "9px",
-        fontSize: "17px",
-        width: "120px",
-        fontWeight: "600",
-        height: "32px",
-        cursor: "pointer",
-        background: "#f7e600",
-        alignItems: "center",
-        display: "flex",
-        justifyContent: "center",
-        padding: "4px 0px",
-    };
-    const ButtoninnerText = styled.div`
-        margin: 0;
-        font-size: 14px;
-        color: #3a1d1d;
-    `;
-
     return (
         <div className="container">
-            <img className="main-img-con" src="img/main-img.png" alt="채움" />
+            <img className="main-img-con" src={logoImg} alt="채움" />
             <div className="main-text-con">물 마시는 습관 기르기</div>
             <div className="main-text-con-bold">채움에 오신 걸 환영해요 👋</div>
             <div className="login-container">
@@ -76,15 +77,15 @@ const LoginContainer = () => {
                         onChange={(e) => {
                             setLoginPassword(e.target.value);
                         }}
-                        required
+                        autoComplete="on"
                     />
                     <div className="login-btn-con">
                         <button type="submit" className="login-btn" onClick={login}>
                             로그인
                         </button>
-                        <KakaoLogin token="0b55b88f1ec8bd96972b452dc70b030e" onSuccess={console.log} onFail={console.error} onLogout={console.info} style={buttonBlock}>
-                            <ButtoninnerText>카카오로 시작</ButtoninnerText>
-                        </KakaoLogin>
+                        <button className="google-login-btn" onClick={handleGoogleLogin}>
+                            Google 로그인
+                        </button>
                     </div>
                 </form>
             </div>
@@ -98,4 +99,4 @@ const LoginContainer = () => {
     );
 };
 
-export default LoginContainer;
+export default Login;
